@@ -6,5 +6,10 @@
 
 void kernel_main(void){
     terminal_initialize();
-    printf("Hello, kernel World!\n");
+
+    for(int i = 0; i < 1000; i++)
+    {
+        printf("%d: Hello, kernel World!\n", i);
+        waitTicks(1000000000);
+    }
 }
