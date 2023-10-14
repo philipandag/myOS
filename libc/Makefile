@@ -38,6 +38,8 @@ string/memcpy.o \
 string/memmove.o \
 string/memset.o \
 string/strlen.o \
+mylib/uitoa.o \
+mylib/waitTicks.o \
 
 HOSTEDOBJS=\
 $(ARCH_HOSTEDOBJS) \
