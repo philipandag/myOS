@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include <mylib.h>
+#include <stdlib.h>
 
 static bool print(const char* data, size_t length){
     const unsigned char* bytes = (const unsigned char*) data;
@@ -70,7 +70,35 @@ int printf(const char* restrict format, ...){
             const unsigned int num = va_arg(parameters, unsigned int);
             char buf[11];
             buf[10] = '\0';
-            uitoa(buf, num);
+            itoa(num, buf, 10);
+            size_t len = strlen(buf);
+            if(maxrem < len){
+                // TODO: Set errno to EOVERFLOW.
+                return -1;
+            }
+            if(!print(buf, len))
+                return -1;
+            written += len;
+        } else if(*format == 'x') {
+            format++;
+            const unsigned int num = va_arg(parameters, unsigned int);
+            char buf[11];
+            buf[10] = '\0';
+            itoa(num, buf, 16);
+            size_t len = strlen(buf);
+            if(maxrem < len){
+                // TODO: Set errno to EOVERFLOW.
+                return -1;
+            }
+            if(!print(buf, len))
+                return -1;
+            written += len;
+        } else if(*format == 'l' && *(format+1) == 'd') {
+            format += 2;
+            const unsigned int num = va_arg(parameters, unsigned int);
+            char buf[11];
+            buf[10] = '\0';
+            ltoa(num, buf, 16);
             size_t len = strlen(buf);
             if(maxrem < len){
                 // TODO: Set errno to EOVERFLOW.
