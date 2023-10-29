@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-char* ltoa(long value, char* str, int base)
+char* lltoa(long long value, char* str, int base)
 {
     char* symbols = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const int MAX_BASE = 36; // strlen(symbols)

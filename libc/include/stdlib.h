@@ -16,11 +16,17 @@ void abort(void);
 // base - base of number system into which the value should be converted, for example 2, 8, 10 or 16
 char* itoa(int value, char* str, int base);
 
+// Converts long to string array
+// value - number to be converted
+// str - buffer in which value converted to string will be stored
+// base - base of number system into which the value should be converted, for example 2, 8, 10 or 16
+char* ltoa(long value, char* str, int base); 
+
 // Converts long long to string array
 // value - number to be converted
 // str - buffer in which value converted to string will be stored
 // base - base of number system into which the value should be converted, for example 2, 8, 10 or 16
-char* ltoa(long long value, char* str, int base); 
+char* lltoa(long long value, char* str, int base); 
 
 #ifdef __cplusplus
 }
