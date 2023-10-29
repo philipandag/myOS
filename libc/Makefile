@@ -33,12 +33,13 @@ stdio/printf.o \
 stdio/putchar.o \
 stdio/puts.o \
 stdlib/abort.o \
+stdlib/itoa.o \
+stdlib/ltoa.o \
 string/memcmp.o \
 string/memcpy.o \
 string/memmove.o \
 string/memset.o \
 string/strlen.o \
-mylib/uitoa.o \
 mylib/waitTicks.o \
 
 HOSTEDOBJS=\
