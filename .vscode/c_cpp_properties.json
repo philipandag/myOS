@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/kernel/include/kernel/**",
+                "${workspaceFolder}/libc/include/**",
+                "${workspaceFolder}/libc/include/sys/**"
+            ],
+            "defines": [],
+            "compilerPath": "/home/filip/opt/cross/bin/i686-elf-gcc",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-gcc-x86"
+        }
+    ],
+    "version": 4
+}
