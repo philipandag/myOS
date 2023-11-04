@@ -38,16 +38,6 @@ void terminal_putentryat(unsigned char c, uint8_t color, size_t x, size_t y){
     terminal_buffer[index] = vga_entry(c, color);
 }
 
-void terminal_newline(void)
-{
-    if(++terminal_row == VGA_HEIGHT)
-    {
-        terminal_scroll();
-        terminal_row = VGA_HEIGHT - 1;
-    }
-    terminal_column = 0;
-}
-
 void terminal_clearline(size_t row){
     uint16_t empty = vga_entry(' ', terminal_color);
     for(size_t index = 0; index < VGA_WIDTH; index++)
@@ -58,6 +48,16 @@ void terminal_scroll(){
     //copy whole terminal buffer one line up
     memmove(&terminal_buffer[0], &terminal_buffer[VGA_WIDTH], VGA_WIDTH*sizeof(uint16_t)*(VGA_HEIGHT-1));
     terminal_clearline(VGA_HEIGHT-1);
+}
+
+void terminal_newline(void)
+{
+    if(++terminal_row == VGA_HEIGHT)
+    {
+        terminal_scroll();
+        terminal_row = VGA_HEIGHT - 1;
+    }
+    terminal_column = 0;
 }
 
 void terminal_delete_last_line(void){
