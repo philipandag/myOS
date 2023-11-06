@@ -1,16 +1,52 @@
+CC := i686-elf-gcc
 
-CFLAGS=-g --freestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti
-LINKERFLAGS=-ffreestanding -O2 -nostdlib
-LIBRARIES=mylib.c stdio.c stdlib.c
+CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -I include
+ASMFLAGS := -felf32
+LINKFLAGS := -ffreestanding -O2 -nostdlib
 
-OBJECTFILES=boot.o kernel.o mylib.o stdio.o stdlib.o
+C_LIB_OBJS := \
+	include/tty.o \
+	include/stdio.o \
+	include/stdlib.o \
+	include/string.o \
+	include/mylib.o
 
-boot: boot.asm
-	nasm -felf32 boot.asm -o boot.o
-	
-kernel: kernel.o
-	i686-elf-gcc -c kernel.c -o kernel.0
+ASM_LIB_OBJS :=
 
-link: $(OBJECTFILES)
-	i686-elf-gcc -T linker.ld -0 myos.bin $(LINKERFLAGS) $(OBJECTFILES) -lgcc
+C_KERNEL_OBJS := \
+	kernel/kernel.o \
+
+ASM_KERNEL_OBJS := \
+	kernel/boot.o \
+
+
+C_OBJS := $(C_LIB_OBJS) $(C_KERNEL_OBJS)
+ASM_OBJS := $(ASM_LIB_OBJS) $(ASM_KERNEL_OBJS)
+
+all: iso
+
+iso: link
+	mkdir -p isodir/boot/grub
+	cp myos.bin isodir/boot/myos.bin
+	cp grub.cfg isodir/boot/grub/grub.cfg
+	grub-mkrescue -o myos.iso isodir
+
+link: $(C_OBJS) $(ASM_OBJS)
+	i686-elf-gcc -T linker.ld -o myos.bin $(LINKFLAGS) $(C_OBJS) $(ASM_OBJS) -lgcc
+
+$(C_OBJS): %.o: %.c
+
+$(ASM_OBJS): %.o: %.asm
+	nasm $(ASMFLAGS) $^
+
+clean:
+	rm -f include/*.o
+	rm -f kernel/*.o
+	rm -f *.bin
+	rm -f *.iso
+	rm -rf isodir
+
+
+
+
 

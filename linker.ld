@@ -31,7 +31,7 @@ SECTIONS
         *(.data)
     }
 
-    /* RW data not initialized (full of trash?)*/\
+    /* RW data not initialized (full of trash?)*/
     /* at the beginning we also put COMMON there which
     means anything not contained inside a section will 
     be at the beginning of .bss of the output binary
