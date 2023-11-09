@@ -5,6 +5,8 @@ MBFLAGS     equ MBALIGN | MEMINFO   ;this is the Multiboot 'flag' field
 MAGIC       equ 0x1BADB002          ;'magic number' which bootloader will look for to find the header
 CHECKSUM    equ -(MAGIC + MBFLAGS)  ;checksum of above, to prove we are multiboot
 
+extern GDTCreate
+extern IDTCreate
 ; Declare a multiboot header that marks the program as a kernel. These are magic
 ; values that are documented in the multiboot standard. The bootloader will
 ; search for this signature in the first 8 KiB of the kernel file, aligned at a
@@ -32,7 +34,20 @@ align 4
 ; section .bss is over here in the upper part of the boot.asm, but the contents
 ; so the stack will be actually placed wherever linker.ld says to put .bss
 ; section
+
+section .data
+gdtr: 	DW 0 ; limit
+		DD 0 ; base
+idtr:	DW 0 ; limit
+		DD 0 ; base
+
 section .bss
+align 4
+GDT_Pointer:
+resb 5*64 ; space for 5 64b gdt entries 
+IDT_Pointer:
+resb 256*64 ; space for all the possible interrupts for now, each has 8 bytes on 32b system
+
 align 16
 stack_bottom:
 resb 1024*16 ;resb-  reserve byte, theres also resw, resd, resq...
@@ -43,7 +58,7 @@ stack_top:
 ; doesn't make sense to return from this function as the bootloader is gone.
 ; Declare _start as a function symbol with the given symbol size.
 section .text
-global _start:function (_start.end - _start)
+global _start
 _start:
     ; The bootloader has loaded us into 32-bit protected mode on a x86
 	; machine. Interrupts are disabled. Paging is disabled. The processor
@@ -69,6 +84,43 @@ _start:
 	; yet. The GDT should be loaded here. Paging should be enabled here.
 	; C++ features such as global constructors and exceptions will require
 	; runtime support to work as well.
+
+	;create GDT, contents specified in gdt.c code
+	push GDT_Pointer
+
+	call GDTCreate
+
+	; gdt limit in bytes
+	mov [gdtr+2], dword GDT_Pointer
+
+	; gdt base
+	mov [gdtr], word 5*64 ; apparently NASM uses just the word representing size, unlike MASM which would like to get `push word ptr xx`
+	; load gdtr, the segment registers are untouched
+	lgdt [gdtr]
+
+
+	jmp 0x08:reload_cs ; 0x08 is kernel code segment
+	reload_cs:
+
+	mov ax, 0x10 ; kernel data segment
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+	mov ss, ax
+
+	; create IDT, contents specified in idt.c code
+	push IDT_Pointer
+	call IDTCreate
+
+	mov [idtr+2], dword IDT_Pointer
+	mov [idtr], word 256*64;
+
+	lidt [idtr]
+
+	sti
+
+
  
 	; Enter the high-level kernel. The ABI requires the stack is 16-byte
 	; aligned at the time of the call instruction (which afterwards pushes

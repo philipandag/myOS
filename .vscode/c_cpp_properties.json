@@ -1,7 +1,7 @@
 {
     "configurations": [
         {
-            "name": "Linux",
+            "name": "myOS",
             "includePath": [
                 "${workspaceFolder}/include",
                 "${workspaceFolder}/include/sys"
@@ -9,8 +9,18 @@
             "defines": [],
             "compilerPath": "/home/filip/opt/cross/bin/i686-elf-gcc",
             "cStandard": "c17",
-            "cppStandard": "c++14",
-            "intelliSenseMode": "linux-gcc-x86",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "gcc-x86",
+            "compilerPathInCppPropertiesJson": "/home/filip/opt/cross/bin/i686-elf-gcc",
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "/home/filip/Desktop/myOS/include",
+                    "/home/filip/Desktop/myOS/include/sys",
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
             "compilerArgs": [
                 "-ffreestanding -O2 -Wall -Wextra -fno-exceptions -I include"
             ]

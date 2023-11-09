@@ -1,12 +1,6 @@
 {
     "files.associations": {
-        "string.h": "c",
-        "tty.h": "c",
-        "stdio.h": "c",
-        "gdt.h": "c",
-        "stdbool.h": "c",
-        "stddef.h": "c",
-        "stdint.h": "c",
-        "stdarg.h": "c"
+        "idt.h": "c",
+        "string.h": "c"
     }
 }

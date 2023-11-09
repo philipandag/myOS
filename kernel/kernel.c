@@ -37,7 +37,7 @@ void kernel_main(){
     for(int i = 0;; i += 1)
     {
         printf("%d: Hello, kernel World!\n", i);
-        waitTicks(-1000);
+        //waitTicks(-1000);
     }
 
 }
