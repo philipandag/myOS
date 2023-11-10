@@ -4,16 +4,16 @@
 #include <stddef.h>
 #include <stdint.h>
 
-const int IDT_GATE_TYPE_TASK =           0b0101;
-const int IDT_GATE_TYPE_16b_INTERRUPT =  0b0110;
-const int IDT_GATE_TYPE_16b_TRAP =       0b0111;
-const int IDT_GATE_TYPE_32b_INTERRUPT =  0b1110;
-const int IDT_GATE_TYPE_32b_TRAP =       0b1111;
+static const int IDT_GATE_TYPE_TASK =           0b0101;
+static const int IDT_GATE_TYPE_16b_INTERRUPT =  0b0110;
+static const int IDT_GATE_TYPE_16b_TRAP =       0b0111;
+static const int IDT_GATE_TYPE_32b_INTERRUPT =  0b1110;
+static const int IDT_GATE_TYPE_32b_TRAP =       0b1111;
 
-const int IDT_DPL_3 =   0b1100000;
-const int IDT_DPL_0 =   0b0000000;
-const int IDT_P_1 =     0b10000000;
-const int IDT_P_0 =     0b00000000;
+static const int IDT_DPL_3 =   0b1100000;
+static const int IDT_DPL_0 =   0b0000000;
+static const int IDT_P_1 =     0b10000000;
+static const int IDT_P_0 =     0b00000000;
 
 
 

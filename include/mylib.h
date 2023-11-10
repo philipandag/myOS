@@ -11,6 +11,7 @@ extern "C" {
 
 // Waits for AT LEAST amount of processor ticks. Most processors work at over a couble GHz, so 1mld ticks is often less than a second.
 void waitTicks(unsigned int amount);
+void printDword(uint32_t value);
 
 
 

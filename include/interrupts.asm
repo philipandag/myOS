@@ -1,32 +1,81 @@
 section .data
 
 section .text
+
 global _interrupt_ignore
+global _interrupt_print_int
+
+extern terminal_putchar
 extern terminal_writestring
-align 4
-_interrupt_ignore:
+
+_irq_end_interrupt:
+    push eax
+    mov al, 0x20
+    out 0x20, al
+    pop eax
+    ret
+
+_interrupt_ignore:  
+    ; cli
+    ; pushad
+
+    ; add byte [0xB8000], 10
+    ; push 'i'
+    ; call terminal_putchar
+    ; add esp, 1
+
+    ; sti
+    iret
+
+_interrupt_print_int:
     cli
     pushad
-    
-    mov al,20h
-    out 20h,al
 
-    ; push byte 0
-    ; push byte 0xa ; newline
-    ; push byte 't'
-    ; push byte 'p'
-    ; push byte 'u'
-    ; push byte 'r'
-    ; push byte 'r'
-    ; push byte 'e'
-    ; push byte 't'
-    ; push byte 'n'
-    ; push byte 'i'
-    ; call terminal_writestring
-    ; add esp, 11
-
+    push dword 'i'
+    call terminal_putchar
+    add esp, 4
     
+    push dword 'n'
+    call terminal_putchar
+    add esp, 4
+    
+    push dword 't'
+    call terminal_putchar
+    add esp, 4
+
+    push dword 0xa
+    call terminal_putchar
+    add esp, 4
 
     popad
     sti
     iret
+_interrupt_IRQ_0:
+    cli
+    pushad
+
+
+    push dword 'I'
+    call terminal_putchar
+    add esp, 4
+    push dword 'R'
+    call terminal_putchar
+    add esp, 4
+    push dword 'Q'
+    call terminal_putchar
+    add esp, 4
+    push dword '0'
+    call terminal_putchar
+    add esp, 4
+    push dword 0xa
+    call terminal_putchar
+    add esp, 4
+    
+
+    call _irq_end_interrupt
+    
+    popad
+    sti
+    iret
+
+    

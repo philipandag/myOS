@@ -5,8 +5,26 @@ MBFLAGS     equ MBALIGN | MEMINFO   ;this is the Multiboot 'flag' field
 MAGIC       equ 0x1BADB002          ;'magic number' which bootloader will look for to find the header
 CHECKSUM    equ -(MAGIC + MBFLAGS)  ;checksum of above, to prove we are multiboot
 
+
+; importing important external functions
 extern GDTCreate
 extern IDTCreate
+extern PIC_remap
+extern PIC_set_mask
+extern PIC_clear_mask
+extern kernel_main
+
+; importing debugging external functions
+extern printDword
+extern terminal_putchar
+extern terminal_initialize
+extern _interrupt_ignore
+
+; exposing some values to C code
+global _start
+global GDT_Pointer
+global IDT_Pointer
+
 ; Declare a multiboot header that marks the program as a kernel. These are magic
 ; values that are documented in the multiboot standard. The bootloader will
 ; search for this signature in the first 8 KiB of the kernel file, aligned at a
@@ -41,6 +59,10 @@ gdtr: 	DW 0 ; limit
 idtr:	DW 0 ; limit
 		DD 0 ; base
 
+; offset used to map IRQ to IDT where it doesnt overlap with reserver 0-31 interrupts
+IRQ1_Offset: db 64
+IRQ2_Offset: db 64+8
+
 section .bss
 align 4
 GDT_Pointer:
@@ -58,7 +80,6 @@ stack_top:
 ; doesn't make sense to return from this function as the bootloader is gone.
 ; Declare _start as a function symbol with the given symbol size.
 section .text
-global _start
 _start:
     ; The bootloader has loaded us into 32-bit protected mode on a x86
 	; machine. Interrupts are disabled. Paging is disabled. The processor
@@ -87,18 +108,17 @@ _start:
 
 	;create GDT, contents specified in gdt.c code
 	push GDT_Pointer
-
 	call GDTCreate
 
 	; gdt limit in bytes
 	mov [gdtr+2], dword GDT_Pointer
-
 	; gdt base
 	mov [gdtr], word 5*64 ; apparently NASM uses just the word representing size, unlike MASM which would like to get `push word ptr xx`
 	; load gdtr, the segment registers are untouched
 	lgdt [gdtr]
 
 
+	; Updating segment registers
 	jmp 0x08:reload_cs ; 0x08 is kernel code segment
 	reload_cs:
 
@@ -109,17 +129,33 @@ _start:
 	mov gs, ax
 	mov ss, ax
 
+
+	; Initialize terminal for debugging
+	; call terminal_initialize
+
 	; create IDT, contents specified in idt.c code
 	push IDT_Pointer
 	call IDTCreate
 
 	mov [idtr+2], dword IDT_Pointer
-	mov [idtr], word 256*64;
+	mov [idtr], word 256*64-1;
 
 	lidt [idtr]
 
+	; enabling interrupts as both GDT and IDT are now created
 	sti
+	
 
+	; reprogramming PIC clock, moving IRQ interrupts 
+	push dword IRQ2_Offset
+	push dword IRQ1_Offset
+	call PIC_remap
+	add esp, 2*4
+
+	; enabling IRQ10
+	push byte 0
+	call PIC_clear_mask
+	add esp, 1
 
  
 	; Enter the high-level kernel. The ABI requires the stack is 16-byte
@@ -129,7 +165,7 @@ _start:
 	; stack since (pushed 0 bytes so far) and the alignment is thus
 	; preserved and the call is well defined.
         ; note, that if you are building on Windows, C functions may have "_" prefix in assembly: _kernel_main
-	extern kernel_main
+
 	call kernel_main
 
 	; If the system has nothing more to do, put the computer into an

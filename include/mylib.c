@@ -1,7 +1,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <mylib.h>
-
+#include <tty.h>
+#include <stdlib.h>
 void waitTicks(unsigned int amount)
 {
     //printf("waitTicks: %d\n", amount);
@@ -30,4 +31,11 @@ void waitTicks(unsigned int amount)
     }
 
 
+}
+void printDword(uint32_t value)
+{
+    char buff[16];
+    uitoa(value, buff, 16);
+    terminal_writestring(buff);
+    return;
 }

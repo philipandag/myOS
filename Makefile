@@ -8,6 +8,7 @@ C_LIB_OBJS := \
 	include/tty.o \
 	include/gdt.o \
 	include/idt.o \
+	include/pic.o \
 	include/mylib.o \
 	include/stdio.o \
 	include/stdlib.o \

@@ -2,5 +2,6 @@
     "files.associations": {
         "idt.h": "c",
         "string.h": "c"
-    }
+    },
+    "C_Cpp.default.compilerPath": "/home/filip/opt/cross/bin/i686-elf-gcc"
 }

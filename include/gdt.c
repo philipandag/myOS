@@ -1,6 +1,5 @@
 #include <gdt.h>
 #include <string.h>
-#include <stdint.h>
 
 void GDTSetBase(uint64_t* descriptor, uint32_t base){
     uint64_t upperPart = base & 0xFF000000;

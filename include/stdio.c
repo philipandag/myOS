@@ -80,12 +80,27 @@ int printf(const char* restrict format, ...){
                 return -1;
             written += len;
 
-        } else if (*format == 'd') { // TODO: make it signed
+        } else if (*format == 'd') {
             format++;
             const int num = va_arg(parameters, const int);
             char buf[11]; // INT_MAX is 10 digits in base 10 4294967296
             buf[10] = '\0';
             itoa(num, buf, 10);
+            size_t len = strlen(buf);
+            if(maxrem < len){
+                // TODO: Set errno to EOVERFLOW.
+                return -1;
+            }
+            if(!print(buf, len))
+                return -1;
+            written += len;
+
+        } else if (*format == 'u' && format[1] == 'd') {
+            format++;
+            const int num = va_arg(parameters, const int);
+            char buf[11]; // INT_MAX is 10 digits in base 10 4294967296
+            buf[10] = '\0';
+            uitoa(num, buf, 10);
             size_t len = strlen(buf);
             if(maxrem < len){
                 // TODO: Set errno to EOVERFLOW.
@@ -130,7 +145,7 @@ int printf(const char* restrict format, ...){
             const int num = va_arg(parameters, const int);
             char buf[9]; // INT_MAX is 8 digits in base 16 FFFFFFFF
             buf[8] = '\0';
-            itoa(num, buf, 16);
+            uitoa(num, buf, 16);
             size_t len = strlen(buf);
             if(maxrem < len){
                 // TODO: Set errno to EOVERFLOW.
@@ -160,7 +175,7 @@ int printf(const char* restrict format, ...){
             const long long num = va_arg(parameters, const long long);
             char buf[17]; // 2^64 is 16 digits in base 16 FFFFFFFFFFFFFFFF
             buf[16] = '\0';
-            lltoa(num, buf, 16);
+            ulltoa(num, buf, 16);
             size_t len = strlen(buf);
             if(maxrem < len){
                 // TODO: Set errno to EOVERFLOW.
