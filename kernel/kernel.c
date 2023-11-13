@@ -6,8 +6,14 @@
 #include <tty.h>
 #include <idt.h>
 #include <gdt.h>
+#include <pic.h>
+#include <ps2.h>
+#include <rtc.h>
+
 
 extern void* _interrupt_ignore;
+uint64_t* GDT, IDT;
+
 
 void printDescriptor(uint64_t* descriptor)
 {
@@ -27,22 +33,38 @@ void printGate(uint64_t* gate)
 }
 
 
-void kernel_main()
+void configuration()
 {
-    uint64_t* GDT, IDT;
+    // Saving pointers to gdt and idt to use in C code
     asm("mov $GDT_Pointer, %[G]\t\n"
         "mov $IDT_Pointer, %[I]"
         :[I]"=r" (IDT), [G]"=r" (GDT)
     );
-    printf("IDT: %x\n GDT: %x\n", IDT, GDT);
+    printf("GDT and IDT - OK\n");
 
-    terminal_initialize();
+    PIC_remap(IRQ1_Offset, IRQ2_Offset);
+    PIC_clear_mask(0); // PIT timer
+    PIC_clear_mask(1); // PS/2 keyboard
+    // PIC_clear_mask(8); // RTC(Real Time Clock)
+    printf("PIC - OK\n");
+
+    init_ps2();
+    //init_rtc();
+
+    printf("Config succeeded!\n\n");
+}
+
+void kernel_main()
+{
+    //terminal_initialize();
+
+    configuration();
 
     for(int i = 0;; i += 1)
     {
-        printf("%d: Hello, kernel World!\n", i);
-        waitTicks(-1000);
-        asm("int $69");
+        //printf("%d: Hello, kernel World!\n", i);
+        //waitTicks(-1000);
+        //asm("int $33"); // causes keyboard interrupt
     }
 
 }

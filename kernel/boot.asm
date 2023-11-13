@@ -24,6 +24,8 @@ extern _interrupt_ignore
 global _start
 global GDT_Pointer
 global IDT_Pointer
+global IRQ1_Offset
+global IRQ2_Offset
 
 ; Declare a multiboot header that marks the program as a kernel. These are magic
 ; values that are documented in the multiboot standard. The bootloader will
@@ -60,8 +62,8 @@ idtr:	DW 0 ; limit
 		DD 0 ; base
 
 ; offset used to map IRQ to IDT where it doesnt overlap with reserver 0-31 interrupts
-IRQ1_Offset: db 64
-IRQ2_Offset: db 64+8
+IRQ1_Offset: dd 0x20
+IRQ2_Offset: dd 0x28
 
 section .bss
 align 4
@@ -129,6 +131,7 @@ _start:
 	mov gs, ax
 	mov ss, ax
 
+	call terminal_initialize
 
 	; Initialize terminal for debugging
 	; call terminal_initialize
@@ -144,18 +147,7 @@ _start:
 
 	; enabling interrupts as both GDT and IDT are now created
 	sti
-	
 
-	; reprogramming PIC clock, moving IRQ interrupts 
-	push dword IRQ2_Offset
-	push dword IRQ1_Offset
-	call PIC_remap
-	add esp, 2*4
-
-	; enabling IRQ10
-	push byte 0
-	call PIC_clear_mask
-	add esp, 1
 
  
 	; Enter the high-level kernel. The ABI requires the stack is 16-byte

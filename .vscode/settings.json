@@ -1,7 +1,13 @@
 {
     "files.associations": {
         "idt.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "functional": "c",
+        "stdint.h": "c",
+        "interrupts.h": "c"
     },
     "C_Cpp.default.compilerPath": "/home/filip/opt/cross/bin/i686-elf-gcc"
 }

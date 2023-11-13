@@ -4,7 +4,10 @@
             "name": "myOS",
             "includePath": [
                 "${workspaceFolder}/include",
-                "${workspaceFolder}/include/sys"
+                "${workspaceFolder}/include/sys",
+                "/home/filip/Desktop/myOS/include",
+                "${workspaceFolder}/kernel",
+                "/home/filip/Desktop/myOS/kernel"
             ],
             "defines": [],
             "cStandard": "c17",
@@ -21,8 +24,9 @@
                 "limitSymbolsToIncludedHeaders": true
             },
             "compilerArgs": [
-                "-ffreestanding -O2 -Wall -Wextra -fno-exceptions -I include"
-            ]
+                "-ffreestanding -O2 -Wall -Wextra -fno-exceptions -I /home/filip/Desktop/myOS/include"
+            ],
+            "compilerPath": "/home/filip/opt/cross/bin/i686-elf-gcc"
         }
     ],
     "version": 4

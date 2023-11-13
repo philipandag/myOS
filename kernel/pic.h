@@ -20,9 +20,20 @@
 #define ICW4_BUF_MASTER 0X0C // buffered mode/master
 #define ICW4_SFNM       0X10 // special fully nested (not)
 
+#define PIC_READ_IRR                0x0a    /* OCW3 irq ready next CMD read */
+#define PIC_READ_ISR                0x0b    /* OCW3 irq service next CMD read */
+
+#include <stdint.h>
 
 void PIC_remap(int offsetMaster, int offsetSlave);
+void PIC_disable();
 void PIC_set_mask(unsigned char IRQLine);
 void PIC_clear_mask(unsigned char IRQLine);
+
+uint16_t pic_get_irr();
+uint16_t pic_get_isr();
+
+extern int IRQ1_Offset;
+extern int IRQ2_Offset;
 
 #endif

@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <vga.h>
 #include <tty.h>
 
 
@@ -33,8 +34,7 @@ static inline uint16_t vga_entry(unsigned char uc, uint8_t color) {
 	return (uint16_t) uc | (uint16_t) color << 8;
 }
 
-static const size_t VGA_WIDTH = 80;
-static const size_t VGA_HEIGHT = 25;
+
 static uint16_t* const VGA_MEMORY = (uint16_t*) 0xB8000;
 
 static size_t terminal_row;
@@ -55,6 +55,20 @@ void terminal_initialize(void){
         }
 }
 
+void terminal_move_cursor(int column, int row)
+{
+	uint16_t pos = row * VGA_WIDTH + column;
+ 
+	outb(0x3D4, 0x0F);
+	outb(0x3D5, (uint8_t) (pos & 0xFF));
+	outb(0x3D4, 0x0E);
+	outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
+}
+
+void terminal_update_cursor(){
+    terminal_move_cursor(terminal_column, terminal_row);
+}
+
 void terminal_setcolor(uint8_t color){
     terminal_color = color;
 }
@@ -62,6 +76,11 @@ void terminal_setcolor(uint8_t color){
 void terminal_putentryat(unsigned char c, uint8_t color, size_t x, size_t y){
     const size_t index = y * VGA_WIDTH + x;
     terminal_buffer[index] = vga_entry(c, color);
+}
+
+char terminal_character_at(size_t column, size_t row)
+{
+    return (char)terminal_buffer[column + VGA_WIDTH * row];
 }
 
 void terminal_clearline(size_t row){
@@ -84,6 +103,7 @@ void terminal_newline(void)
         terminal_row = VGA_HEIGHT - 1;
     }
     terminal_column = 0;
+    terminal_update_cursor();
 }
 
 void terminal_delete_last_line(void){
@@ -96,21 +116,69 @@ void terminal_delete_last_line(void){
     }
 }
 
+void terminal_tab(){
+    do
+    {
+        terminal_putchar(' ');
+    }while(terminal_column % 4 != 0);
+    terminal_update_cursor();
+}
+
+void terminal_backspace(){
+
+    if(terminal_column == 0)
+    {
+        if(terminal_row != 0){
+            terminal_row--;
+            terminal_column = VGA_WIDTH-1;
+            
+            while(terminal_character_at(terminal_column-1, terminal_row) == ' ' && terminal_column != 0){
+                terminal_column--;
+            }
+            
+        }
+    }
+    else{
+     terminal_column --; 
+    }
+
+    terminal_putentryat(' ', terminal_color, terminal_column, terminal_row);
+    terminal_update_cursor();
+    return;
+}
+
 void terminal_putchar(char c){
     unsigned char uc = c;
 
-    if(uc == '\n')
+    switch(uc)
     {
-        terminal_newline();
-        return;
+        case '\n':{
+            terminal_newline();
+            break;
+        }
+        case '\0':{
+            break;
+        }
+        case '\b':{
+            terminal_backspace();
+            break;
+        }
+        case '\t':{
+            terminal_tab();
+            break;
+        }
+        default:{
+            terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
+            if(++terminal_column == VGA_WIDTH)
+            {
+                terminal_column = 0;
+                terminal_newline();
+            }
+            terminal_update_cursor();
+        }
+
     }
 
-    terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
-    if(++terminal_column == VGA_WIDTH)
-    {
-        terminal_column = 0;
-        terminal_newline();
-    }
 }
 
 void terminal_write(const char* data, size_t size){
@@ -120,4 +188,17 @@ void terminal_write(const char* data, size_t size){
 
 void terminal_writestring(const char* string){
     terminal_write(string, strlen(string));
+}
+
+void terminal_writestring_at(const char* string, int column, int row)
+{
+    int x = terminal_column;
+    int y = terminal_row;
+
+    terminal_column = column;
+    terminal_row = row;
+    terminal_writestring(string);
+    terminal_column = x;
+    terminal_row = y;
+    terminal_move_cursor(x, y);
 }

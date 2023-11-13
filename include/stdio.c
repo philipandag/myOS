@@ -80,6 +80,20 @@ int printf(const char* restrict format, ...){
                 return -1;
             written += len;
 
+        } else if(*format == 'c'){
+            format++;
+            const char c = va_arg(parameters, const int);
+            char str[] = {c, '\0'}; 
+            int len = 1;
+            if(maxrem < 1){
+                // TODO: Set errno to EOVERFLOW.
+                return -1;
+            }
+
+            if(!print(str, len))
+                return -1;
+            written += len;
+
         } else if (*format == 'd') {
             format++;
             const int num = va_arg(parameters, const int);

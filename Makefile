@@ -1,14 +1,10 @@
 CC := i686-elf-gcc
 
-CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -I include
+CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -I include -I kernel
 ASMFLAGS := -f elf32
 LINKFLAGS := -ffreestanding -O2 -nostdlib
 
 C_LIB_OBJS := \
-	include/tty.o \
-	include/gdt.o \
-	include/idt.o \
-	include/pic.o \
 	include/mylib.o \
 	include/stdio.o \
 	include/stdlib.o \
@@ -16,14 +12,24 @@ C_LIB_OBJS := \
 
 
 
-ASM_LIB_OBJS := \
-	include/interrupts.o
+ASM_LIB_OBJS := 
 
 C_KERNEL_OBJS := \
-	kernel/kernel.o 
+	kernel/kernel.o \
+	kernel/tty.o \
+	kernel/gdt.o \
+	kernel/interrupts.o \
+	kernel/idt.o \
+	kernel/io.o \
+	kernel/pic.o \
+	kernel/ps2.o \
+	kernel/rtc.o
 
 ASM_KERNEL_OBJS := \
-	kernel/boot.o 
+	kernel/boot.o \
+	kernel/interrupts_asm.o 
+
+	
 
 
 C_OBJS := $(C_LIB_OBJS) $(C_KERNEL_OBJS)

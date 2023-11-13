@@ -27,4 +27,4 @@ VBoxManage modifyvm MyOS --boot1 dvd --boot2 disk
 # VBoxManage modifyvm MyOS --vrdemulticon on --vrdeport 10001
 
 # start machine
-VirtualBoxVM --startvm MyOS --debug
+VirtualBoxVM --startvm MyOS #--debug

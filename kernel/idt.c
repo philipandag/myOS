@@ -1,7 +1,11 @@
+#include "pic.h"
 #include <idt.h>
 #include <string.h>
 #include <stdint.h>
+#include <tty.h>
+#include <mylib.h>
 
+#include <interrupts.h>
 
 void IDTSetOffset(uint64_t* gateDescriptor, uint32_t offset)
 {
@@ -50,6 +54,16 @@ void IDTCreate(void* IDTStart)
 {
     const int IDT_SIZE = 256;
     uint64_t IDT[IDT_SIZE];
+    int IRQ1_Offset, IRQ2_Offset;
+    asm volatile (
+        "mov IRQ1_Offset, %0"
+        : "=r" (IRQ1_Offset)
+    );
+    asm volatile (
+        "mov IRQ2_Offset, %0"
+        : "=r" (IRQ2_Offset)
+    );
+
 
     int interrupt_ignore_offset;
     asm volatile (
@@ -63,19 +77,53 @@ void IDTCreate(void* IDTStart)
         : "=r" (interrupt_print_int_offset)
     );
 
+    int interrupt_IRQ_ignore_offset;
+    asm volatile (
+        "mov $_interrupt_IRQ_ignore, %0"
+        : "=r" (interrupt_IRQ_ignore_offset)
+    );
+
+    int interrupt_IRQ_0_offset;
+    asm volatile (
+        "mov $_interrupt_IRQ_0, %0"
+        : "=r" (interrupt_IRQ_0_offset)
+    );
+    int interrupt_IRQ_1_offset;
+    asm volatile (
+        "mov $_interrupt_IRQ_1, %0"
+        : "=r" (interrupt_IRQ_1_offset)
+    );
+    int interrupt_IRQ_8_offset;
+    asm volatile (
+        "mov $_interrupt_IRQ_8, %0"
+        : "=r" (interrupt_IRQ_8_offset)
+    );
+
     // 0-31 Reserved Protected Mode Exceptions
     // 8-15 default mapping of IRQ0-7 by the BIOS at bootstrap
     // 70h-78h = 112-120 default mapping of IRQ8-15 by the BIOS at bootstrap
 
     int attributes = IDT_DPL_0 | IDT_GATE_TYPE_32b_INTERRUPT | IDT_P_1;
     // filling with ignores for now
-    for(int i = 0; i < 32; i++)
-    {
-        
+    for(int i = 0; i < 32; i++)   
         IDT[i] = IDTCreateGateDescriptor(interrupt_ignore_offset, 0x08, attributes);
-    }
 
-    IDT[69] = IDTCreateGateDescriptor(interrupt_print_int_offset, 0x08, attributes);
+    for(int i = 32; i < 256; i++)
+        IDT[i] = IDTCreateGateDescriptor(interrupt_ignore_offset, 0x08, attributes);
+    
+
+    // filling IRQ gates for now
+    for(int i = IRQ1_Offset; i < IRQ1_Offset+8; i++)
+        IDT[i] = IDTCreateGateDescriptor(interrupt_IRQ_ignore_offset, 0x08, attributes);
+    for(int i = IRQ2_Offset; i < IRQ2_Offset+2; i++)
+        IDT[i] = IDTCreateGateDescriptor(interrupt_IRQ_ignore_offset, 0x08, attributes);
+   
+    // Keyboard interrupt
+    IDT[IRQ1_Offset + 0] = IDTCreateGateDescriptor(interrupt_IRQ_0_offset, 0x08, attributes);
+    IDT[IRQ1_Offset + 1] = IDTCreateGateDescriptor(interrupt_IRQ_1_offset, 0x08, attributes);
+    IDT[IRQ1_Offset + 8] = IDTCreateGateDescriptor(interrupt_IRQ_8_offset, 0x08, attributes);
+
+    // IRQ8-15 at 78-85
 
     memcpy(IDTStart, &IDT, IDT_SIZE * sizeof(uint64_t));
 }
