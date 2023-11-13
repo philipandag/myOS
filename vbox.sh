@@ -1,5 +1,7 @@
 #!/bin/bash
 
+unset GTK_PATH # vs code sets this thing and it somehow interferes with vbox and grubmkrescue
+
 # delete old vm
 VBoxManage unregistervm MyOS --delete
 # creating vm and registering to see in gui
