@@ -156,7 +156,7 @@ int printf(const char* restrict format, ...){
 
         } else if(*format == 'x') {
             format++;
-            const int num = va_arg(parameters, const int);
+            const unsigned int num = va_arg(parameters, const unsigned int);
             char buf[9]; // INT_MAX is 8 digits in base 16 FFFFFFFF
             buf[8] = '\0';
             uitoa(num, buf, 16);

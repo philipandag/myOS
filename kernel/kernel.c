@@ -56,7 +56,7 @@ void configuration()
 
 void kernel_main()
 {
-    //terminal_initialize();
+    //terminal_initialize(); // its already called as early as in boot.asm to enable debug messages
 
     configuration();
 
