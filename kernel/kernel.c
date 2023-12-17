@@ -12,7 +12,8 @@
 
 
 extern void* _interrupt_ignore;
-uint64_t* GDT, IDT;
+uint64_t* GDT;
+uint64_t* IDT;
 
 
 void printDescriptor(uint64_t* descriptor)

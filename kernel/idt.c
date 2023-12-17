@@ -77,6 +77,12 @@ void IDTCreate(void* IDTStart)
         : "=r" (interrupt_print_int_offset)
     );
 
+    int interrupt_13_general_protection_fault_offset;
+    asm volatile (
+        "mov $_interrupt_13_general_protection_fault, %0"
+        : "=r" (interrupt_13_general_protection_fault_offset)
+    );
+
     int interrupt_IRQ_ignore_offset;
     asm volatile (
         "mov $_interrupt_IRQ_ignore, %0"
@@ -122,6 +128,8 @@ void IDTCreate(void* IDTStart)
     IDT[IRQ1_Offset + 0] = IDTCreateGateDescriptor(interrupt_IRQ_0_offset, 0x08, attributes);
     IDT[IRQ1_Offset + 1] = IDTCreateGateDescriptor(interrupt_IRQ_1_offset, 0x08, attributes);
     IDT[IRQ1_Offset + 8] = IDTCreateGateDescriptor(interrupt_IRQ_8_offset, 0x08, attributes);
+    IDT[IRQ1_Offset + 13] = IDTCreateGateDescriptor(interrupt_13_general_protection_fault_offset, 0x08, attributes);
+
 
     // IRQ8-15 at 78-85
 

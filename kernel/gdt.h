@@ -4,35 +4,33 @@
 #include <stddef.h>
 #include <stdint.h>
 
-static const int GDT_ACCESS_BYTE_A_1 =     0b00000001;
-static const int GDT_ACCESS_BYTE_A_0 =     0b00000000;
-static const int GDT_ACCESS_BYTE_RW_1 =    0b00000010;
-static const int GDT_ACCESS_BYTE_RW_0 =    0b00000000;
-static const int GDT_ACCESS_BYTE_DC_1 =    0b00000100;
-static const int GDT_ACCESS_BYTE_DC_0 =    0b00000000;
-static const int GDT_ACCESS_BYTE_E_1 =     0b00001000;
-static const int GDT_ACCESS_BYTE_E_0 =     0b00000000;
-static const int GDT_ACCESS_BYTE_S_0 =     0b00000000;
-static const int GDT_ACCESS_BYTE_DPL_3 =   0b01100000;
-static const int GDT_ACCESS_BYTE_S_1 =     0b00010000;
-static const int GDT_ACCESS_BYTE_DPL_0 =   0b00000000;
-static const int GDT_ACCESS_BYTE_P_1 =     0b10000000;
-static const int GDT_ACCESS_BYTE_P_0 =     0b00000000;
-
-static const int GDT_SYSTEM_ACCESS_BYTE_TYPE =     0b00001111;
-static const int GDT_SYSTEM_ACCESS_BYTE_S_1 =      0b00010000;
-static const int GDT_SYSTEM_ACCESS_BYTE_S_0 =      0b00000000;
-static const int GDT_SYSTEM_ACCESS_BYTE_DPL_3 =    0b01100000;
-static const int GDT_SYSTEM_ACCESS_BYTE_DPL_0 =    0b00000000;
-static const int GDT_SYSTEM_ACCESS_BYTE_P_1 =      0b10000000;
-static const int GDT_SYSTEM_ACCESS_BYTE_P_0 =      0b00000000;
-
-static const int GDT_FLAGS_L_1 = 0b10;
-static const int GDT_FLAGS_L_0 = 0b00;
-static const int GDT_FLAGS_DB_1 = 0b100;
-static const int GDT_FLAGS_DB_0 = 0b000;
-static const int GDT_FLAGS_G_1 = 0b1000;
-static const int GDT_FLAGS_G_0 = 0b0000;
+#define  GDT_ACCESS_BYTE_A_1        0b00000001
+#define  GDT_ACCESS_BYTE_A_0        0b00000000
+#define  GDT_ACCESS_BYTE_RW_0       0b00000000
+#define  GDT_ACCESS_BYTE_RW_1       0b00000010
+#define  GDT_ACCESS_BYTE_DC_1       0b00000100
+#define  GDT_ACCESS_BYTE_DC_0       0b00000000
+#define  GDT_ACCESS_BYTE_E_1        0b00001000
+#define  GDT_ACCESS_BYTE_E_0        0b00000000
+#define  GDT_ACCESS_BYTE_S_0        0b00000000
+#define  GDT_ACCESS_BYTE_DPL_3      0b01100000
+#define  GDT_ACCESS_BYTE_S_1        0b00010000
+#define  GDT_ACCESS_BYTE_DPL_0      0b00000000
+#define  GDT_ACCESS_BYTE_P_1        0b10000000
+#define  GDT_ACCESS_BYTE_P_0        0b00000000
+#define  GDT_SYSTEM_ACCESS_BYTE_TYPE      0b00001111
+#define  GDT_SYSTEM_ACCESS_BYTE_S_1       0b00010000
+#define  GDT_SYSTEM_ACCESS_BYTE_S_0       0b00000000
+#define  GDT_SYSTEM_ACCESS_BYTE_DPL_3     0b01100000
+#define  GDT_SYSTEM_ACCESS_BYTE_DPL_0     0b00000000
+#define  GDT_SYSTEM_ACCESS_BYTE_P_1       0b10000000
+#define  GDT_SYSTEM_ACCESS_BYTE_P_0       0b00000000
+#define  GDT_FLAGS_L_1      0b10
+#define  GDT_FLAGS_L_0      0b00
+#define  GDT_FLAGS_DB_1     0b100
+#define  GDT_FLAGS_DB_0     0b000
+#define  GDT_FLAGS_G_1      0b1000
+#define  GDT_FLAGS_G_0      0b0000
 
 
 // base is stored in two parts on bits:

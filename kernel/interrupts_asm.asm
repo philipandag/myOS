@@ -8,6 +8,7 @@ global _interrupt_IRQ_ignore
 global _interrupt_IRQ_0
 global _interrupt_IRQ_1
 global _interrupt_IRQ_8
+global _interrupt_13_general_protection_fault
 
 extern terminal_putchar
 extern terminal_writestring
@@ -53,6 +54,30 @@ _interrupt_print_int:
     popad
     sti
     iret
+
+_interrupt_13_general_protection_fault:
+    cli
+    pushad
+
+    push dword 'G'
+    call terminal_putchar
+    add esp, 4
+    
+    push dword 'P'
+    call terminal_putchar
+    add esp, 4
+    
+    push dword 'F'
+    call terminal_putchar
+    add esp, 4
+
+    push dword 0xa
+    call terminal_putchar
+    add esp, 4
+
+    popad
+    sti
+    iret    
 
 ; IRQ Interrupts
 
