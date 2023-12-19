@@ -9,24 +9,29 @@ SECTIONS
     /* "." means adress where we are at currently
     setting it at 1M */
     . = 1M;
+    .multiboot :
+    {
+        *(.multiboot)
+    }
+
+    . += 0xC0000000;
 
     /* first .text section with code which
     will contain miltiboot header for bootloader to find
     and only then the actual code */
-    .text BLOCK(4K) : ALIGN(4K)
+    .text ALIGN (4K) : AT (ADDR (.text) - 0xC0000000)
     {
-        *(.multiboot)
         *(.text)
     }
 
     /* Read only data section after the code */
-    .rodata BLOCK(4K) : ALIGN(4K)
+    .rodata ALIGN(4K) : AT (ADDR (.rodata) - 0xC0000000)
     {
         *(.rodata)
     }
 
     /* RW data initialized (zeroed?) */
-    .data BLOCK(4K) : ALIGN(4K)
+    .data ALIGN(4K) : AT (ADDR (.data) - 0xC0000000)
     {
         *(.data)
     }
@@ -36,7 +41,7 @@ SECTIONS
     means anything not contained inside a section will 
     be at the beginning of .bss of the output binary
     */
-    .bss BLOCK(4K) : ALIGN(4K)
+    .bss ALIGN(4K) : AT (ADDR (.bss) - 0xC0000000)
     {
         *(COMMON)
         *(.bss)

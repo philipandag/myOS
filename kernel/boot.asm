@@ -81,6 +81,8 @@ stack_top:
 ; bootloader will jump to this position once the kernel has been loaded. It
 ; doesn't make sense to return from this function as the bootloader is gone.
 ; Declare _start as a function symbol with the given symbol size.
+
+
 section .text
 _start:
     ; The bootloader has loaded us into 32-bit protected mode on a x86

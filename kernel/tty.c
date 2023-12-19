@@ -35,7 +35,7 @@ static inline uint16_t vga_entry(unsigned char uc, uint8_t color) {
 }
 
 
-static uint16_t* const VGA_MEMORY = (uint16_t*) 0xB8000;
+static uint16_t* const VGA_MEMORY = (uint16_t*) VGA_MEMORY_BUFFER_ADDRESS;
 
 static size_t terminal_row;
 static size_t terminal_column;
